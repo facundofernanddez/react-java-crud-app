@@ -1,11 +1,9 @@
 import axios from "axios";
 
-export const personService = () => {
-  const baseUrl = "http://localhost:8080/person/";
+export class personService {
+  baseUrl = "http://localhost:8080/users/";
 
-  const getAll = () => {
-    axios.get(baseUrl + "all").then((res) => res.data.data);
-  };
-
-  return getAll;
-};
+  getAll() {
+    return axios.get(this.baseUrl + "all").then((res) => res.data.data);
+  }
+}

@@ -1,12 +1,21 @@
-import './App.css';
-import { personService } from './services/PersonService';
-import { Component } from 'react';
+import "./App.css";
+import { personService } from "./services/PersonService";
+import { Component } from "react";
 
+export default class App extends Component {
+  constructor() {
+    super();
+    this.state = {};
+    this.personService = new personService();
+  }
 
-function App() {
-  const [person, setPerson] = useState([]);
+  componentDidMount() {
+    this.personService.getAll().then((data) => {
+      console.log(data);
+    });
+  }
 
-  return ();
+  render() {
+    return <h1>Hola mundo</h1>;
+  }
 }
-
-export default App;
