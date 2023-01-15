@@ -25,6 +25,7 @@ export default class App extends Component {
         address: "",
         cellphone: "",
       },
+      selectedPerson: {},
     };
     this.items = [
       {
@@ -38,19 +39,20 @@ export default class App extends Component {
         label: "Editar",
         icon: "pi pi-fw pi-pencil",
         command: () => {
-          alert("updated!");
+          this.showEditDialog();
         },
       },
       {
         label: "Eliminar",
         icon: "pi pi-fw pi-trash",
         command: () => {
-          alert("erased!");
+          this.delete();
         },
       },
     ];
     this.personService = new personService();
     this.save = this.save.bind(this);
+    this.delete = this.delete.bind(this);
     this.footer = (
       <div>
         <Button label="Guardar" icon="pi pi-check" onClick={this.save} />
@@ -79,7 +81,7 @@ export default class App extends Component {
       this.toast.show({
         severity: "success",
         summary: "Atención!",
-        detail: "Se creó el registro correctamente",
+        detail: "Se guardó el registro correctamente",
       });
       this.personService
         .getAll()
@@ -87,12 +89,34 @@ export default class App extends Component {
     });
   }
 
+  delete() {
+    if (window.confirm("¿Realmente desea eliminar el registro?")) {
+      this.personService.delete(this.state.selectedPerson.id).then((data) => {
+        this.toast.show({
+          severity: "success",
+          summary: "Atención!",
+          detail: "Se eliminó el registro correctamente",
+        });
+        this.personService
+          .getAll()
+          .then((data) => this.setState({ persons: data }));
+      });
+    }
+  }
+
   render() {
     return (
       <div>
         <Menubar model={this.items} />
         <br />
-        <DataTable value={this.state.persons}>
+        <DataTable
+          value={this.state.persons}
+          rows="4"
+          paginator
+          selectionMode="single"
+          selection={this.state.selectedPerson}
+          onSelectionChange={(e) => this.setState({ selectedPerson: e.value })}
+        >
           <Column field="id" header="ID"></Column>
           <Column field="name" header="Name"></Column>
           <Column field="lastname" header="Lastname"></Column>
@@ -189,6 +213,19 @@ export default class App extends Component {
         lastname: "",
         address: "",
         cellphone: "",
+      },
+    });
+  }
+
+  showEditDialog() {
+    this.setState({
+      visible: true,
+      person: {
+        id: this.state.selectedPerson.id,
+        name: this.state.selectedPerson.name,
+        lastname: this.state.selectedPerson.lastname,
+        address: this.state.selectedPerson.address,
+        cellphone: this.state.selectedPerson.cellphone,
       },
     });
   }

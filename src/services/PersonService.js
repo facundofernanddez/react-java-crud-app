@@ -10,4 +10,8 @@ export class personService {
   save(persona) {
     return axios.post(this.baseUrl + "save", persona).then((res) => res.data);
   }
+
+  delete(id) {
+    return axios.delete(this.baseUrl + "delete/" + id).then((res) => res.data);
+  }
 }
