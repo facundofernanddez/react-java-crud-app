@@ -11,11 +11,21 @@ import { Menubar } from "primereact/menubar";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
+import { Toast } from "primereact/toast";
 
 export default class App extends Component {
   constructor() {
     super();
-    this.state = {};
+    this.state = {
+      visible: false,
+      person: {
+        id: null,
+        name: "",
+        lastname: "",
+        address: "",
+        cellphone: "",
+      },
+    };
     this.items = [
       {
         label: "Nuevo",
@@ -39,33 +49,41 @@ export default class App extends Component {
         },
       },
     ];
+    this.personService = new personService();
+    this.save = this.save.bind(this);
     this.footer = (
       <div>
         <Button label="Guardar" icon="pi pi-check" onClick={this.save} />
       </div>
     );
-    this.personService = new personService();
   }
 
   componentDidMount() {
     this.personService
       .getAll()
       .then((data) => this.setState({ persons: data }));
-    this.setState({
-      visible: false,
-      person: {
-        id: null,
-        name: null,
-        lastname: null,
-        address: null,
-        cellphone: null,
-      },
-    });
   }
 
   save() {
     this.personService.save(this.state.person).then((data) => {
-      console.log(data);
+      this.setState({
+        visible: false,
+        person: {
+          id: null,
+          name: "",
+          lastname: "",
+          address: "",
+          cellphone: "",
+        },
+      });
+      this.toast.show({
+        severity: "success",
+        summary: "Atención!",
+        detail: "Se creó el registro correctamente",
+      });
+      this.personService
+        .getAll()
+        .then((data) => this.setState({ persons: data }));
     });
   }
 
@@ -91,68 +109,73 @@ export default class App extends Component {
         >
           <span className="p-float-label">
             <InputText
-              value={this.state.value}
+              value={this.state.person.name}
               id="nombre"
-              onChange={(e) =>
+              onChange={(e) => {
+                let val = e.target.value;
                 this.setState((prevState) => {
                   let person = Object.assign({}, prevState.person);
-                  person.name = e.target.value;
+                  person.name = val;
 
                   return { person };
-                })
-              }
+                });
+              }}
             />
             <label htmlFor="nombre">Nombre</label>
           </span>
           <br />
           <span className="p-float-label">
             <InputText
-              value={this.state.value}
+              value={this.state.person.lastname}
               id="lastname"
-              onChange={(e) =>
+              onChange={(e) => {
+                let val = e.target.value;
                 this.setState((prevState) => {
                   let person = Object.assign({}, prevState.person);
-                  person.lastname = e.target.value;
+                  person.lastname = val;
 
                   return { person };
-                })
-              }
+                });
+              }}
             />
             <label htmlFor="lastname">Apellido</label>
           </span>
           <br />
           <span className="p-float-label">
             <InputText
-              value={this.state.value}
+              value={this.state.person.address}
               id="address"
-              onChange={(e) =>
+              onChange={(e) => {
+                let val = e.target.value;
                 this.setState((prevState) => {
                   let person = Object.assign({}, prevState.person);
-                  person.address = e.target.value;
+                  person.address = val;
 
                   return { person };
-                })
-              }
+                });
+              }}
             />
             <label htmlFor="address">Direccion</label>
           </span>
           <br />
           <span className="p-float-label">
             <InputText
-              value={this.state.value}
+              value={this.state.person.cellphone}
               id="cellphone"
-              onChange={(e) =>
+              onChange={(e) => {
+                let val = e.target.value;
                 this.setState((prevState) => {
                   let person = Object.assign({}, prevState.person);
-                  person.cellphone = e.target.value;
+                  person.cellphone = val;
 
                   return { person };
-                })
-              }
+                });
+              }}
             />
             <label htmlFor="cellphone">Telefono</label>
           </span>
         </Dialog>
+        <Toast ref={(e) => (this.toast = e)} />
       </div>
     );
   }
@@ -160,6 +183,13 @@ export default class App extends Component {
   showSaveDialog() {
     this.setState({
       visible: true,
+      person: {
+        id: null,
+        name: "",
+        lastname: "",
+        address: "",
+        cellphone: "",
+      },
     });
   }
 }
